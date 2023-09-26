@@ -225,4 +225,72 @@ export class FetcherService {
 
 		return true;
 	}
+
+	async postFollow(id: string): Promise<IResponse<unknown>> {
+
+		const params = new URLSearchParams();
+		params.append('include_profile_interstitial_type', '1');
+		params.append('include_blocking', '1');
+		params.append('include_blocked_by', '1');
+		params.append('include_followed_by', '1');
+		params.append('include_want_retweets', '1');
+		params.append('include_mute_edge', '1');
+		params.append('include_can_dm', '1');
+		params.append('include_can_media_tag', '1');
+		params.append('include_ext_has_nft_avatar', '1');
+		params.append('include_ext_is_blue_verified', '1');
+		params.append('include_ext_verified_type', '1');
+		params.append('include_ext_profile_image_shape', '1');
+		params.append('user_id', id);
+
+		const headers: AxiosRequestHeaders = JSON.parse(JSON.stringify(this.cred.toHeader())) as AxiosRequestHeaders;
+		headers['Content-Type'] = 'application/x-www-form-urlencoded';
+
+		const axiosRequest: AxiosRequestConfig = {
+			url: 'https://twitter.com/i/api/1.1/friendships/create.json',
+			method: 'POST',
+			data: params.toString(),
+			headers: headers,
+		}
+		return await axios<IResponse<unknown>>(axiosRequest)
+			.then((res) => this.handleHttpError(res))
+			.then((res) => this.handleApiError(res));
+	}
+
+	async getMessages(myId: string, otherId: string): Promise<IResponse<unknown>> {
+		const headers: AxiosRequestHeaders = JSON.parse(JSON.stringify(this.cred.toHeader())) as AxiosRequestHeaders;
+		// headers['Referer'] = `https://twitter.com/messages/${otherId}-${myId}`;
+		const axiosRequest: AxiosRequestConfig = {
+			url: `https://twitter.com/i/api/1.1/dm/conversation/${otherId}-${myId}.json?context=FETCH_DM_CONVERSATION&include_profile_interstitial_type=1&include_blocking=1&include_blocked_by=1&include_followed_by=1&include_want_retweets=1&include_mute_edge=1&include_can_dm=1&include_can_media_tag=1&include_ext_has_nft_avatar=1&include_ext_is_blue_verified=1&include_ext_verified_type=1&include_ext_profile_image_shape=1&skip_status=1&dm_secret_conversations_enabled=false&krs_registration_enabled=true&cards_platform=Web-12&include_cards=1&include_ext_alt_text=true&include_ext_limited_action_results=true&include_quote_count=true&include_reply_count=1&tweet_mode=extended&include_ext_views=true&dm_users=false&include_groups=true&include_inbox_timelines=true&include_ext_media_color=true&supports_reactions=true&include_conversation_info=true&ext=mediaColor%2CaltText%2CmediaStats%2ChighlightedLabel%2ChasNftAvatar%2CvoiceInfo%2CbirdwatchPivot%2CsuperFollowMetadata%2CunmentionInfo%2CeditControl`,
+			method: 'GET',
+			// data: params.toString(),
+			headers: headers,
+		}
+		return await axios<IResponse<unknown>>(axiosRequest)
+			.then((res) => this.handleHttpError(res))
+			.then((res) => this.handleApiError(res));
+	}
+
+	async sendMessage(myId: string, otherId: string, text: string, uuid: string): Promise<IResponse<unknown>> {
+		const headers: AxiosRequestHeaders = JSON.parse(JSON.stringify(this.cred.toHeader())) as AxiosRequestHeaders;
+
+		const axiosRequest: AxiosRequestConfig = {
+			url: 'https://twitter.com/i/api/1.1/dm/new2.json?ext=mediaColor,altText,mediaStats,highlightedLabel,hasNftAvatar,voiceInfo,birdwatchPivot,superFollowMetadata,unmentionInfo,editControl&include_ext_alt_text=true&include_ext_limited_action_results=true&include_reply_count=1&tweet_mode=extended&include_ext_views=true&include_groups=true&include_inbox_timelines=true&include_ext_media_color=true&supports_reactions=true',
+			method: 'POST',
+			data: {
+				'cards_platform': 'Web-12',
+				'conversation_id': `${otherId}-${myId}`,
+				'dm_users': false,
+				'include_cards': 1,
+				'include_quote_count': true,
+				'recipient_ids': false,
+				'request_id': uuid,
+				'text': text,
+			},
+			headers: headers,
+		}
+		return await axios<IResponse<unknown>>(axiosRequest).then((res) => this.handleHttpError(res))
+			.then((res) => this.handleApiError(res));
+	}
+
 }
