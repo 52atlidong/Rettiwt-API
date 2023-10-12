@@ -45,4 +45,6 @@ export interface IUser {
 
 	/** The url of the profile image. */
 	profileImage: string;
+
+	followedBy: boolean;
 }

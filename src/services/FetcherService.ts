@@ -223,7 +223,6 @@ export class FetcherService {
 
 		// Posting the data
 		const res = await this.request(request);
-		console.log(res);
 		return true;
 	}
 
@@ -249,6 +248,36 @@ export class FetcherService {
 
 		const axiosRequest: AxiosRequestConfig = {
 			url: 'https://twitter.com/i/api/1.1/friendships/create.json',
+			method: 'POST',
+			data: params.toString(),
+			headers: headers,
+		}
+		return await axios<IResponse<unknown>>(axiosRequest)
+			.then((res) => this.handleHttpError(res))
+			.then((res) => this.handleApiError(res));
+	}
+
+	async unFollow(id: string) : Promise<IResponse<unknown>> {
+		const params = new URLSearchParams();
+		params.append('include_profile_interstitial_type', '1');
+		params.append('include_blocking', '1');
+		params.append('include_blocked_by', '1');
+		params.append('include_followed_by', '1');
+		params.append('include_want_retweets', '1');
+		params.append('include_mute_edge', '1');
+		params.append('include_can_dm', '1');
+		params.append('include_can_media_tag', '1');
+		params.append('include_ext_has_nft_avatar', '1');
+		params.append('include_ext_is_blue_verified', '1');
+		params.append('include_ext_verified_type', '1');
+		params.append('include_ext_profile_image_shape', '1');
+		params.append('skip_status', '1');
+		params.append('user_id', id);
+		const headers: AxiosRequestHeaders = JSON.parse(JSON.stringify(this.cred.toHeader())) as AxiosRequestHeaders;
+		headers['Content-Type'] = 'application/x-www-form-urlencoded';
+
+		const axiosRequest: AxiosRequestConfig = {
+			url: 'https://twitter.com/i/api/1.1/friendships/destroy.json',
 			method: 'POST',
 			data: params.toString(),
 			headers: headers,
@@ -332,7 +361,7 @@ export class FetcherService {
 			headers: headers,
 		}
 		return await axios<IResponse<unknown>>(axiosRequest).then((res) => this.handleHttpError(res))
-		.then((res) => this.handleApiError(res));
+			.then((res) => this.handleApiError(res));
 	}
 
 }

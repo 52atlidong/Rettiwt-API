@@ -52,6 +52,7 @@ export class User implements IUser {
 	/** The url of the profile image. */
 	profileImage: string;
 
+	followedBy: boolean;
 	/**
 	 * Initializes a new User from the given raw user data.
 	 *
@@ -72,5 +73,6 @@ export class User implements IUser {
 		this.pinnedTweet = user.legacy.pinned_tweet_ids_str[0];
 		this.profileBanner = user.legacy.profile_banner_url;
 		this.profileImage = user.legacy.profile_image_url_https;
+		this.followedBy = user.legacy.followed_by ? user.legacy.followed_by : false;
 	}
 }
