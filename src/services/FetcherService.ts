@@ -16,7 +16,7 @@ import axios, { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse } from 'a
 import https, { Agent } from 'https';
 import { AuthCredential } from 'rettiwt-auth';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-
+import { SocksProxyAgent } from 'socks-proxy-agent';
 // ENUMS
 import { EHttpStatus } from '../enums/HTTP';
 import { EApiErrors } from '../enums/ApiErrors';
@@ -68,6 +68,11 @@ export class FetcherService {
 	 */
 	private getHttpsAgent(proxyUrl?: URL): Agent {
 		if (proxyUrl) {
+
+			if(proxyUrl.toString().startsWith('socks')) {
+				return new SocksProxyAgent(proxyUrl);
+			}
+
 			return new HttpsProxyAgent(proxyUrl);
 		}
 
@@ -257,7 +262,7 @@ export class FetcherService {
 			.then((res) => this.handleApiError(res));
 	}
 
-	async unFollow(id: string) : Promise<IResponse<unknown>> {
+	async unFollow(id: string): Promise<IResponse<unknown>> {
 		const params = new URLSearchParams();
 		params.append('include_profile_interstitial_type', '1');
 		params.append('include_blocking', '1');
@@ -364,4 +369,22 @@ export class FetcherService {
 			.then((res) => this.handleApiError(res));
 	}
 
+	async uploadInit(totalTypes: string, mediaType: string, mediaCategory: string) : Promise<IResponse<unknown>> {
+		const headers: AxiosRequestHeaders = JSON.parse(JSON.stringify(this.cred.toHeader())) as AxiosRequestHeaders;
+		const axiosRequest: AxiosRequestConfig = {
+			url: 'https://upload.twitter.com/i/media/upload.json',
+			method: 'POST',
+			params: new URLSearchParams(
+				[
+					['command', 'INIT'],
+					['total_bytes', totalTypes],
+					['media_type', mediaType],
+					['media_category', mediaCategory]
+				]
+			),
+			headers: headers,
+		}
+		return await axios<IResponse<unknown>>(axiosRequest).then((res) => this.handleHttpError(res))
+		.then((res) => this.handleApiError(res));
+	}
 }
