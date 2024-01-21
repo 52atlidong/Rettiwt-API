@@ -53,6 +53,7 @@ export class User implements IUser {
 	profileImage: string;
 
 	followedBy: boolean;
+	canDM: boolean;
 	/**
 	 * Initializes a new User from the given raw user data.
 	 *
@@ -74,5 +75,6 @@ export class User implements IUser {
 		this.profileBanner = user.legacy.profile_banner_url;
 		this.profileImage = user.legacy.profile_image_url_https;
 		this.followedBy = user.legacy.followed_by ? user.legacy.followed_by : false;
+		this.canDM = user.legacy.can_dm ? user.legacy.can_dm : false;
 	}
 }
