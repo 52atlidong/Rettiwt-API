@@ -6,6 +6,7 @@
 export enum EApiErrors {
 	COULD_NOT_AUTHENTICATE = 'Failed to authenticate',
 	RESOURCE_NOT_FOUND = 'Requested resource not found',
+	USER_NOT_SUSPENDED = 'Missing TwitterUserNotSuspended',
 	MISSING_PARAMETER = 'Missing named parameter',
 	USER_NOT_FOUND = 'Requested user not found',
 	USER_SUSPENDED = 'Requested user has been suspended',

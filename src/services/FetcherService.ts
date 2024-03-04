@@ -69,7 +69,7 @@ export class FetcherService {
 	private getHttpsAgent(proxyUrl?: URL): Agent {
 		if (proxyUrl) {
 
-			if(proxyUrl.toString().startsWith('socks')) {
+			if (proxyUrl.toString().startsWith('socks')) {
 				return new SocksProxyAgent(proxyUrl);
 			}
 
@@ -105,6 +105,7 @@ export class FetcherService {
 	private handleApiError(res: AxiosResponse<IResponse<unknown>>): AxiosResponse<IResponse<unknown>> {
 		// If error exists
 		if (res.data.errors && res.data.errors.length) {
+			console.log(res.data.errors);
 			// Getting the error code
 			const code: number = res.data.errors[0].code;
 
@@ -310,7 +311,7 @@ export class FetcherService {
 		const headers: AxiosRequestHeaders = JSON.parse(JSON.stringify(this.cred.toHeader())) as AxiosRequestHeaders;
 
 		const axiosRequest: AxiosRequestConfig = {
-			url: 'https://twitter.com/i/api/1.1/dm/new2.json?ext=mediaColor,altText,mediaStats,highlightedLabel,hasNftAvatar,voiceInfo,birdwatchPivot,superFollowMetadata,unmentionInfo,editControl&include_ext_alt_text=true&include_ext_limited_action_results=true&include_reply_count=1&tweet_mode=extended&include_ext_views=true&include_groups=true&include_inbox_timelines=true&include_ext_media_color=true&supports_reactions=true',
+			url: 'https://twitter.com/i/api/1.1/dm/new2.json?ext=mediaColor%2CaltText%2CmediaStats%2ChighlightedLabel%2ChasNftAvatar%2CvoiceInfo%2CbirdwatchPivot%2CsuperFollowMetadata%2CunmentionInfo%2CeditControl&include_ext_alt_text=true&include_ext_limited_action_results=true&include_reply_count=1&tweet_mode=extended&include_ext_views=true&include_groups=true&include_inbox_timelines=true&include_ext_media_color=true&supports_reactions=true',
 			method: 'POST',
 			data: {
 				'cards_platform': 'Web-12',
@@ -321,6 +322,34 @@ export class FetcherService {
 				'recipient_ids': false,
 				'request_id': uuid,
 				'text': text,
+			},
+			headers: headers,
+		}
+		return await axios<IResponse<unknown>>(axiosRequest).then((res) => this.handleHttpError(res))
+			.then((res) => this.handleApiError(res));
+	}
+
+	// async permissions(otherId: string): Promise<IResponse<unknown>> {
+	// 	const headers: AxiosRequestHeaders = JSON.parse(JSON.stringify(this.cred.toHeader())) as AxiosRequestHeaders;
+	// 	const axiosRequest: AxiosRequestConfig = {
+	// 		url: `https://twitter.com/i/api/1.1/dm/permissions.json?recipient_ids=${otherId}&dm_users=true`,
+	// 		method: 'GET',
+	// 		headers: headers,
+	// 	}
+	// 	return await axios<IResponse<unknown>>(axiosRequest).then((res) => this.handleHttpError(res))
+	// 	.then((res) => this.handleApiError(res));
+	// }
+
+	async useTypingNotifierMutation(myId: string, otherId: string): Promise<IResponse<unknown>> {
+		const headers: AxiosRequestHeaders = JSON.parse(JSON.stringify(this.cred.toHeader())) as AxiosRequestHeaders;
+		const axiosRequest: AxiosRequestConfig = {
+			url: 'https://twitter.com/i/api/graphql/HL96-xZ3Y81IEzAdczDokg/useTypingNotifierMutation',
+			method: 'POST',
+			data: {
+				queryId: 'HL96-xZ3Y81IEzAdczDokg',
+				variables: {
+					'conversationId': `${otherId}-${myId}`,
+				}
 			},
 			headers: headers,
 		}
@@ -369,7 +398,7 @@ export class FetcherService {
 			.then((res) => this.handleApiError(res));
 	}
 
-	async uploadInit(totalTypes: string, mediaType: string, mediaCategory: string) : Promise<IResponse<unknown>> {
+	async uploadInit(totalTypes: string, mediaType: string, mediaCategory: string): Promise<IResponse<unknown>> {
 		const headers: AxiosRequestHeaders = JSON.parse(JSON.stringify(this.cred.toHeader())) as AxiosRequestHeaders;
 		const axiosRequest: AxiosRequestConfig = {
 			url: 'https://upload.twitter.com/i/media/upload.json',
@@ -385,6 +414,6 @@ export class FetcherService {
 			headers: headers,
 		}
 		return await axios<IResponse<unknown>>(axiosRequest).then((res) => this.handleHttpError(res))
-		.then((res) => this.handleApiError(res));
+			.then((res) => this.handleApiError(res));
 	}
 }
