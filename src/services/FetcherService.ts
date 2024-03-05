@@ -105,7 +105,6 @@ export class FetcherService {
 	private handleApiError(res: AxiosResponse<IResponse<unknown>>): AxiosResponse<IResponse<unknown>> {
 		// If error exists
 		if (res.data.errors && res.data.errors.length) {
-			console.log(res.data.errors);
 			// Getting the error code
 			const code: number = res.data.errors[0].code;
 
